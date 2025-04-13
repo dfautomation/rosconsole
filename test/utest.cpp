@@ -1031,7 +1031,7 @@ TEST(RosConsole, formatter)
 
   // time format
   {
-    std::string format_string = "${time:%Y %H:%M:%S}";
+    std::string format_string = "${time:%Y %H:%M:%S.%f %z}";
 
     ros::console::g_formatter.tokens_.clear();
     ros::console::g_formatter.init(format_string.c_str());
@@ -1040,7 +1040,7 @@ TEST(RosConsole, formatter)
       log4cxx::Logger::getLogger(ROSCONSOLE_ROOT_LOGGER_NAME), level, str,
       file, function, 0);
 
-    boost::regex expr("([0-9]{4}) ([0-9]{2}:[0-9]{2}:[0-9]{2})");
+    boost::regex expr("([0-9]{4}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{6} [\+\-][0-9]{4})");
     EXPECT_TRUE(boost::regex_match(result, expr));
   }
 
@@ -1061,7 +1061,7 @@ TEST(RosConsole, formatter)
 
   // walltime format
   {
-    std::string format_string = "${walltime:%Y %H:%M:%S}";
+    std::string format_string = "${walltime:%Y %H:%M:%S.%f %z}";
 
     ros::console::g_formatter.tokens_.clear();
     ros::console::g_formatter.init(format_string.c_str());
@@ -1070,7 +1070,7 @@ TEST(RosConsole, formatter)
       log4cxx::Logger::getLogger(ROSCONSOLE_ROOT_LOGGER_NAME), level, str,
       file, function, 0);
 
-    boost::regex expr("([0-9]{4}) ([0-9]{2}:[0-9]{2}:[0-9]{2})");
+    boost::regex expr("([0-9]{4}) ([0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{6} [\+\-][0-9]{4})");
     EXPECT_TRUE(boost::regex_match(result, expr));
   }
 }

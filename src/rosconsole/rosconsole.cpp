@@ -42,7 +42,7 @@
 #include <boost/shared_array.hpp>
 #include <boost/regex.hpp>
 #include <boost/make_shared.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/local_time/local_time.hpp>
 
 #include <cstdarg>
 #include <cstdlib>
@@ -181,9 +181,30 @@ struct MessageToken : public Token
   }
 };
 
+boost::local_time::local_date_time toLocalTime(boost::posix_time::ptime utc_time)
+{
+  time_t now = time(nullptr);
+  tm local_tm = *localtime(&now);
+  tm utc_tm = *gmtime(&now);
+
+  int offset_sec =
+    (local_tm.tm_hour - utc_tm.tm_hour) * 3600 +
+    (local_tm.tm_min - utc_tm.tm_min) * 60 +
+    (local_tm.tm_yday - utc_tm.tm_yday) * 86400;
+
+  char buf[10];
+  snprintf(buf, sizeof(buf), "%+03d:%02d", offset_sec / 3600, std::abs((offset_sec % 3600) / 60));
+  std::string offset_str(buf);
+
+  boost::local_time::time_zone_ptr tz(new boost::local_time::posix_time_zone(offset_str));
+  return boost::local_time::local_date_time(utc_time, tz);
+}
+
 struct TimeToken : public Token
 {
-  explicit TimeToken(const std::string &format) : format_(format) {};
+  explicit TimeToken(const std::string &format)
+    : format_(boost::algorithm::replace_all_copy(format, "%z", "%q"))
+  {}
 
   virtual std::string getString(void*, ::ros::console::Level, const char*, const char*, const char*, int)
   {
@@ -195,10 +216,10 @@ struct TimeToken : public Token
     }
     else
     {
-      boost::posix_time::time_facet *facet = new boost::posix_time::time_facet();
+      boost::local_time::local_time_facet *facet = new boost::local_time::local_time_facet();
       facet->format(format_.c_str());
       ss.imbue(std::locale(std::locale::classic(), facet));
-      ss << ros::WallTime::now().toBoost();
+      ss << toLocalTime(ros::WallTime::now().toBoost());
     }
 
     if (ros::Time::isValid() && ros::Time::isSimTime())
@@ -213,7 +234,9 @@ struct TimeToken : public Token
 
 struct WallTimeToken : public Token
 {
-  explicit WallTimeToken(const std::string &format) : format_(format) {};
+  explicit WallTimeToken(const std::string &format)
+    : format_(boost::algorithm::replace_all_copy(format, "%z", "%q"))
+  {}
 
   virtual std::string getString(void*, ::ros::console::Level, const char*, const char*, const char*, int)
   {
@@ -225,10 +248,10 @@ struct WallTimeToken : public Token
     }
     else
     {
-      boost::posix_time::time_facet* facet = new boost::posix_time::time_facet();
+      boost::local_time::local_time_facet* facet = new boost::local_time::local_time_facet();
       facet->format(format_.c_str());
       ss.imbue(std::locale(std::locale::classic(), facet));
-      ss << ros::WallTime::now().toBoost();
+      ss << toLocalTime(ros::WallTime::now().toBoost());
     }
 
     return ss.str();
