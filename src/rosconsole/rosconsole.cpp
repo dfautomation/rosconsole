@@ -203,16 +203,7 @@ struct TimeToken : public Token
 
     if (ros::Time::isValid() && ros::Time::isSimTime())
     {
-      ss << ", ";
-
-      if (format_.empty())
-      {
-        ss << ros::Time::now();
-      }
-      else
-      {
-        ss << ros::Time::now().toBoost();
-      }
+      ss << ", " << ros::Time::now();
     }
     return ss.str();
   }
