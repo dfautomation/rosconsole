@@ -2,8 +2,8 @@
 Changelog for package rosconsole
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.14.5 (2025-06-02)
+-------------------
 * Add timezone formatting for rosconsole.
 * Avoid formatting sim time.
 * Contributors: Patrick Chin
