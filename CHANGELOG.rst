@@ -2,6 +2,12 @@
 Changelog for package rosconsole
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add timezone formatting for rosconsole.
+* Avoid formatting sim time.
+* Contributors: Patrick Chin
+
 1.14.4 (2025-04-10)
 -------------------
 * Finding boost dependencies is now required. (`#47 <https://github.com/ros/rosconsole/issues/47>`_)
